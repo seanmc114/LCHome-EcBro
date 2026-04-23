@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TURBO — Home Ec HL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1a2e; --card: rgba(255,255,255,0.97);
+      --primary: #c0392b; --primary-light: #fdf2f2;
+      --green: #1a7a4a; --gold: #b45309;
+      --ink: #1c1917; --muted: #78716c; --border: #e0dbd4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+    .container { width: 100%; max-width: 640px; margin: 20px; background: var(--card); border-radius: 22px; padding: 28px 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.45); color: var(--ink); }
+    .game-title { font-family: 'Lora', serif; font-size: 3rem; color: var(--primary); margin-bottom: 2px; font-style: italic; letter-spacing: -1px; }
+    .game-sub { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+    .progress-wrap { margin-bottom: 16px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; }
+    .progress-track { background: #eee; border-radius: 50px; height: 9px; }
+    .progress-fill { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--primary), var(--gold)); transition: width 0.4s; }
+    .star-banner { background: var(--primary-light); border: 2px solid var(--primary); border-radius: 10px; padding: 9px 14px; font-size: 0.88rem; color: var(--primary); font-weight: 700; margin-bottom: 18px; }
+    #cat-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; justify-content: center; }
+    .cat-btn { background: #f0ece6; color: var(--muted); font-size: 0.8rem; padding: 7px 13px; border: none; border-radius: 20px; cursor: pointer; font-weight: 700; transition: all 0.2s; font-family: 'Nunito', sans-serif; }
+    .cat-btn:hover { background: #ddd; }
+    .cat-btn.active { background: var(--primary); color: white; }
+    #level-list { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 6px; }
+    .zone-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 6px 0 2px; align-self: flex-start; padding-left: 4px; }
+    .level-btn { font-size: 0.98rem; padding: 13px 16px; background: var(--green); color: white; border-radius: 10px; border: none; cursor: pointer; width: 96%; max-width: 380px; transition: transform 0.2s, filter 0.2s; display: flex; justify-content: space-between; align-items: center; font-family: 'Nunito', sans-serif; font-weight: 700; }
+    .level-btn:hover { filter: brightness(1.08); transform: scale(1.02); }
+    .level-btn:disabled { background: #c8c4bc; cursor: not-allowed; transform: none; color: #888; }
+    .level-btn.adv { background: #7c3d9e; }
+    .level-badge { font-size: 0.7rem; background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 10px; }
+    .Auntie-btn { background: linear-gradient(135deg, var(--primary), #922b21) !important; justify-content: center !important; font-size: 1rem !important; }
+    #game { display: none; margin-top: 16px; }
+    #timer { font-size: 1.3rem; color: var(--primary); font-weight: 900; margin-bottom: 14px; }
+    #questions div { margin: 14px 0; font-size: 0.97rem; text-align: left; }
+    #questions input { font-size: 0.97rem; padding: 9px 11px; width: 100%; margin-top: 5px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; box-sizing: border-box; }
+    #questions input:focus { outline: none; border-color: var(--primary); }
+    #submit { font-size: 1.2rem; padding: 13px 26px; background: var(--primary); color: white; border-radius: 12px; cursor: pointer; margin: 14px 4px 4px; border: none; font-family: 'Nunito', sans-serif; font-weight: 900; transition: transform 0.2s, filter 0.2s; }
+    #submit:hover { filter: brightness(1.1); transform: scale(1.03); }
+    #results { margin-top: 16px; font-size: 0.97rem; text-align: left; }
+    .try-again, #back-button { font-size: 1rem; padding: 11px 20px; background: var(--primary); color: white; border-radius: 10px; cursor: pointer; margin: 7px 4px; border: none; font-family: 'Nunito', sans-serif; font-weight: 900; transition: transform 0.2s; }
+    #back-button { background: #555; }
+    .try-again:hover, #back-button:hover { transform: scale(1.03); }
+    .perfect-celebration { font-size: 1.8rem; color: var(--gold); margin-bottom: 10px; text-align: center; }
+    .unlock-msg { color: var(--green); font-weight: 700; font-size: 0.97rem; margin: 8px 0; }
+    footer { margin-top: 28px; font-size: 0.7rem; color: #aaa; border-top: 1px solid #eee; padding-top: 12px; text-align: center; }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 480px) {
+      .container { margin: 10px; padding: 20px 16px; border-radius: 16px; }
+      .game-title { font-size: 2.4rem; }
+      .cat-btn { font-size: 0.75rem; padding: 6px 11px; }
+      .level-btn { font-size: 0.92rem; padding: 13px 14px; width: 100%; }
+      #questions div { font-size: 0.92rem; margin: 12px 0; }
+      #questions input { font-size: 1rem; padding: 10px 11px; }
+      #submit { font-size: 1.1rem; padding: 14px 22px; width: 100%; margin: 14px 0 4px; }
+      .try-again, #back-button { font-size: 0.95rem; padding: 12px 18px; }
+      #results { font-size: 0.92rem; }
+    }
+    @media (max-width: 360px) {
+      .game-title { font-size: 2rem; }
+      .cat-btn { font-size: 0.7rem; padding: 5px 9px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="game-title">TURBO</div>
+  <p class="game-sub">Home Economics · Higher Level · Leaving Cert</p>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Stars to unlock The Auntie</span><span id="progress-pct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="star-banner" id="star-banner">⭐ 0 stars — do 5 to unlock The Auntie</div>
+
+  <div id="cat-buttons">
+    <button class="cat-btn active" type="button" onclick="selectCat('nutrition',this)">🥦 Nutrition</button>
+    <button class="cat-btn" type="button" onclick="selectCat('foodscience',this)">🔬 Food Science</button>
+    <button class="cat-btn" type="button" onclick="selectCat('consumer',this)">🛒 Consumer Studies</button>
+    <button class="cat-btn" type="button" onclick="selectCat('resource',this)">🏠 Resource Mgmt</button>
+    <button class="cat-btn" type="button" onclick="selectCat('social',this)">👨‍👩‍👧 Social Studies</button>
+  </div>
+
+  <div id="level-list"></div>
+
+  <div id="game">
+    <div id="timer">Time: 0s</div>
+    <div id="questions"></div>
+    <button id="submit" type="button">Check Answers</button>
+    <div id="results"></div>
+  </div>
+
+  <footer>© 2026 · Home Ec HL · Imagination and Perseverance</footer>
+</div>
+
+<script>
+// ============================================================
+// TERMS BANK — Home Ec HL
+// Format: { prompt, answer, lv }
+// ~15-20 per level per category = ~600+ items total
+// Draw is random from matching level + adjacent for variety
+// ============================================================
+const TERMS = {
+
+// ============================================================
+// NUTRITION
+// ============================================================
+nutrition: [
+  // Level 1 — basic nutrients, names and simple functions
+  {prompt:"The nutrient needed for growth and repair of body cells",answer:"protein",lv:1},
+  {prompt:"The nutrient that provides 9 kcal per gram",answer:"fat",lv:1},
+  {prompt:"The main energy source in the Irish diet",answer:"carbohydrate",lv:1},
+  {prompt:"The mineral needed for strong bones and teeth",answer:"calcium",lv:1},
+  {prompt:"The mineral needed to make red blood cells",answer:"iron",lv:1},
+  {prompt:"The vitamin that helps the body absorb calcium",answer:"vitamin D",lv:1},
+  {prompt:"The vitamin found in citrus fruits that prevents scurvy",answer:"vitamin C",lv:1},
+  {prompt:"The nutrient the body needs in the largest amounts",answer:"water",lv:1},
+  {prompt:"Fat-soluble vitamins are stored here",answer:"liver",lv:1},
+  {prompt:"Carbohydrates that cannot be digested — aids bowel function",answer:"dietary fibre",lv:1},
+  {prompt:"The energy unit used to measure food energy",answer:"kilocalorie",lv:1},
+  {prompt:"Proteins from animal sources that contain all essential amino acids",answer:"complete proteins",lv:1},
+  {prompt:"The type of carbohydrate found in table sugar",answer:"sucrose",lv:1},
+  {prompt:"The type of fat that is solid at room temperature",answer:"saturated fat",lv:1},
+  {prompt:"The type of fat that is liquid at room temperature",answer:"unsaturated fat",lv:1},
+  {prompt:"Vitamin found in dairy, eggs and fish that helps bone health",answer:"vitamin D",lv:1},
+  {prompt:"A fat-soluble vitamin found in orange and yellow vegetables",answer:"vitamin A",lv:1},
+  {prompt:"The B vitamin needed to prevent neural tube defects",answer:"folic acid",lv:1},
+
+  // Level 2 — deficiency diseases, sources, daily needs
+  {prompt:"The deficiency disease caused by lack of vitamin C",answer:"scurvy",lv:2},
+  {prompt:"The deficiency disease caused by lack of vitamin D in children",answer:"rickets",lv:2},
+  {prompt:"The deficiency disease caused by lack of iron",answer:"anaemia",lv:2},
+  {prompt:"The deficiency disease caused by lack of vitamin D in adults",answer:"osteomalacia",lv:2},
+  {prompt:"The condition caused by long-term calcium deficiency in older adults",answer:"osteoporosis",lv:2},
+  {prompt:"The B vitamin deficiency that causes pellagra",answer:"niacin",lv:2},
+  {prompt:"Proteins that lack one or more essential amino acids",answer:"incomplete proteins",lv:2},
+  {prompt:"Plant proteins that become complete when combined",answer:"complementary proteins",lv:2},
+  {prompt:"The term for amino acids the body cannot make itself",answer:"essential amino acids",lv:2},
+  {prompt:"The number of essential amino acids",answer:"eight",lv:2},
+  {prompt:"A plant source of complete protein",answer:"soya bean",lv:2},
+  {prompt:"The type of fat linked to increased risk of heart disease",answer:"saturated fat",lv:2},
+  {prompt:"Fats that lower LDL cholesterol — found in olive oil",answer:"monounsaturated fats",lv:2},
+  {prompt:"Fats found in oily fish that protect the heart",answer:"omega-3 fatty acids",lv:2},
+  {prompt:"The fat-like substance that can clog arteries",answer:"cholesterol",lv:2},
+  {prompt:"The 'bad' cholesterol that builds up in artery walls",answer:"LDL cholesterol",lv:2},
+  {prompt:"The 'good' cholesterol that removes fat from the blood",answer:"HDL cholesterol",lv:2},
+  {prompt:"The process by which unsaturated fats are hardened",answer:"hydrogenation",lv:2},
+  {prompt:"The type of fat produced during hydrogenation",answer:"trans fat",lv:2},
+
+  // Level 3 — dietary guidelines, food groups, RDAs
+  {prompt:"The recommended percentage of daily energy from carbohydrates",answer:"50 to 55 percent",lv:3},
+  {prompt:"The recommended percentage of daily energy from fat",answer:"no more than 35 percent",lv:3},
+  {prompt:"The recommended percentage of daily energy from protein",answer:"15 percent",lv:3},
+  {prompt:"The recommended daily intake of dietary fibre for adults",answer:"25 grams",lv:3},
+  {prompt:"The Irish government guidelines for healthy eating",answer:"food pyramid",lv:3},
+  {prompt:"The base of the food pyramid — eat most of these",answer:"cereals and starchy foods",lv:3},
+  {prompt:"The daily calcium requirement for teenagers",answer:"1200 milligrams",lv:3},
+  {prompt:"The daily iron requirement for teenage girls",answer:"14 milligrams",lv:3},
+  {prompt:"The recommended daily salt intake for adults",answer:"6 grams",lv:3},
+  {prompt:"The guideline daily amount of water for adults",answer:"2 litres",lv:3},
+  {prompt:"The term for recommended daily amounts of each nutrient",answer:"RDA",lv:3},
+  {prompt:"The term for the energy needed to keep the body alive at rest",answer:"basal metabolic rate",lv:3},
+  {prompt:"A factor that increases basal metabolic rate",answer:"exercise or pregnancy or age",lv:3},
+  {prompt:"Foods fortified with calcium in Ireland",answer:"bread and milk",lv:3},
+  {prompt:"The term for a diet that provides all nutrients in correct amounts",answer:"balanced diet",lv:3},
+  {prompt:"The dietary guideline to reduce risk of bowel cancer",answer:"increase dietary fibre",lv:3},
+  {prompt:"The government agency responsible for food safety in Ireland",answer:"FSAI",lv:3},
+
+  // Level 4 — special dietary needs
+  {prompt:"The dietary condition requiring strict avoidance of gluten",answer:"coeliac disease",lv:4},
+  {prompt:"The protein found in wheat that coeliacs cannot tolerate",answer:"gluten",lv:4},
+  {prompt:"A grain that is safe for coeliacs",answer:"rice or maize or quinoa",lv:4},
+  {prompt:"The dietary approach for someone with type 2 diabetes",answer:"low GI high fibre low sugar diet",lv:4},
+  {prompt:"The term for the rate at which a food raises blood glucose",answer:"glycaemic index",lv:4},
+  {prompt:"A food with a low glycaemic index",answer:"porridge or lentils or apples",lv:4},
+  {prompt:"The nutrient vegetarians must plan carefully to get enough of",answer:"protein and iron and B12",lv:4},
+  {prompt:"The vitamin only found naturally in animal foods",answer:"vitamin B12",lv:4},
+  {prompt:"The increased nutritional need during pregnancy",answer:"folic acid and iron and calcium",lv:4},
+  {prompt:"The nutrient whose requirement increases significantly in adolescence",answer:"calcium and iron",lv:4},
+  {prompt:"The dietary change recommended to reduce high blood pressure",answer:"reduce salt intake",lv:4},
+  {prompt:"The condition where the body cannot regulate blood glucose",answer:"diabetes",lv:4},
+  {prompt:"The type of diabetes associated with lifestyle and diet",answer:"type 2 diabetes",lv:4},
+  {prompt:"An allergy requiring avoidance of all dairy products",answer:"milk protein allergy",lv:4},
+  {prompt:"An intolerance to the sugar in milk",answer:"lactose intolerance",lv:4},
+  {prompt:"The nutrient that elderly people often need more of",answer:"vitamin D and calcium",lv:4},
+  {prompt:"The term for a diet completely free of animal products",answer:"vegan diet",lv:4},
+
+  // Level 5 — digestion and absorption
+  {prompt:"The enzyme in saliva that begins starch digestion",answer:"salivary amylase",lv:5},
+  {prompt:"The organ where most digestion and absorption takes place",answer:"small intestine",lv:5},
+  {prompt:"The enzyme that breaks down proteins in the stomach",answer:"pepsin",lv:5},
+  {prompt:"The acid produced by the stomach that activates pepsin",answer:"hydrochloric acid",lv:5},
+  {prompt:"The organ that produces bile to emulsify fats",answer:"liver",lv:5},
+  {prompt:"Where bile is stored before release into the small intestine",answer:"gall bladder",lv:5},
+  {prompt:"The enzyme that breaks down fats in the small intestine",answer:"lipase",lv:5},
+  {prompt:"The organ that produces digestive enzymes and insulin",answer:"pancreas",lv:5},
+  {prompt:"The finger-like projections that absorb nutrients in the small intestine",answer:"villi",lv:5},
+  {prompt:"The process by which nutrients pass from the gut into the blood",answer:"absorption",lv:5},
+  {prompt:"The final products of protein digestion",answer:"amino acids",lv:5},
+  {prompt:"The final products of fat digestion",answer:"fatty acids and glycerol",lv:5},
+  {prompt:"The final products of carbohydrate digestion",answer:"glucose",lv:5},
+  {prompt:"The hormone released when blood glucose rises",answer:"insulin",lv:5},
+  {prompt:"The hormone released when blood glucose falls",answer:"glucagon",lv:5},
+  {prompt:"Where fat-soluble vitamins are absorbed into",answer:"lymphatic system",lv:5},
+  {prompt:"The large intestine's main function in nutrition",answer:"water absorption",lv:5},
+
+  // Level 6 — exam-style application
+  {prompt:"Three functions of water in the body",answer:"solvent transport temperature regulation",lv:6},
+  {prompt:"The effect of cooking on vitamin C",answer:"it is destroyed by heat and water",lv:6},
+  {prompt:"Why iron from plant sources is less well absorbed than from meat",answer:"it is non-haem iron",lv:6},
+  {prompt:"The nutrient that aids absorption of non-haem iron",answer:"vitamin C",lv:6},
+  {prompt:"The term for nutrients that work together to benefit health",answer:"synergy",lv:6},
+  {prompt:"An example of nutrient synergy",answer:"calcium and vitamin D",lv:6},
+  {prompt:"The effect of excessive saturated fat in the diet",answer:"raised LDL cholesterol and heart disease risk",lv:6},
+  {prompt:"Why teenagers need more calcium than adults",answer:"bone growth and development",lv:6},
+  {prompt:"The term for the amount of a nutrient the body actually uses",answer:"bioavailability",lv:6},
+  {prompt:"A factor that reduces calcium absorption",answer:"phytic acid or oxalic acid",lv:6},
+  {prompt:"A factor that increases calcium absorption",answer:"vitamin D",lv:6},
+  {prompt:"The link between diet and cardiovascular disease",answer:"high saturated fat raises LDL and causes atherosclerosis",lv:6},
+  {prompt:"The term for the narrowing of arteries due to fat deposits",answer:"atherosclerosis",lv:6},
+  {prompt:"Why fibre reduces risk of bowel cancer",answer:"speeds transit time reducing toxin contact",lv:6},
+  {prompt:"The relationship between obesity and diet",answer:"excess energy intake stored as fat",lv:6},
+  {prompt:"Why protein needs are higher in adolescence",answer:"rapid growth and muscle development",lv:6},
+
+  // Level 7 — complex application and evaluation
+  {prompt:"The term for a chemical reaction in the body that requires nutrients",answer:"metabolism",lv:7},
+  {prompt:"Evaluate the claim: all fat is bad for health",answer:"unsaturated fats are essential and protect the heart",lv:7},
+  {prompt:"The long-term health consequence of low dietary fibre",answer:"constipation diverticular disease bowel cancer",lv:7},
+  {prompt:"Why food labels must show energy per 100g",answer:"to allow comparison between products",lv:7},
+  {prompt:"The nutritional reason oily fish is recommended twice a week",answer:"omega-3 fatty acids protect against heart disease",lv:7},
+  {prompt:"The term for energy balance where intake equals expenditure",answer:"energy equilibrium",lv:7},
+  {prompt:"Consequences of negative energy balance",answer:"weight loss muscle wasting malnutrition",lv:7},
+  {prompt:"The term for assessment of a nation's nutritional status",answer:"national nutrition survey",lv:7},
+  {prompt:"The Irish nutrition survey findings on teenagers",answer:"low calcium low iron low fibre high saturated fat",lv:7},
+  {prompt:"Why the elderly are at risk of vitamin D deficiency",answer:"less sun exposure reduced skin synthesis",lv:7},
+  {prompt:"The nutritional implication of a vegan diet",answer:"risk of B12 iron zinc omega-3 deficiency",lv:7},
+  {prompt:"Why food fortification is used in Ireland",answer:"to address widespread nutrient deficiencies in population",lv:7},
+  {prompt:"Nutrients added to bread in Ireland",answer:"calcium iron B vitamins",lv:7},
+
+  // Level 8 — highest level synthesis
+  {prompt:"The link between diet and cancer prevention",answer:"high fibre antioxidants low processed meat low alcohol",lv:8},
+  {prompt:"The role of antioxidants in disease prevention",answer:"neutralise free radicals that damage cells",lv:8},
+  {prompt:"Name three antioxidant nutrients",answer:"vitamin C vitamin E beta-carotene",lv:8},
+  {prompt:"The epigenetic argument for good maternal nutrition",answer:"diet during pregnancy affects gene expression in the child",lv:8},
+  {prompt:"The nutritional basis of the Mediterranean diet's health benefits",answer:"high in unsaturated fats fibre antioxidants low in processed food",lv:8},
+  {prompt:"Why addressing food poverty matters nutritionally",answer:"poor diet causes deficiencies and long-term disease",lv:8},
+  {prompt:"The term for studying how nutrition affects gene expression",answer:"nutrigenomics",lv:8},
+  {prompt:"The public health argument for nutrition education in schools",answer:"prevent obesity diabetes heart disease from early life",lv:8},
+],
+
+// ============================================================
+// FOOD SCIENCE
+// ============================================================
+foodscience: [
+  // Level 1 — basic cooking processes and changes
+  {prompt:"What happens to protein when it is heated",answer:"denaturation",lv:1},
+  {prompt:"What happens to starch granules when heated in water",answer:"gelatinisation",lv:1},
+  {prompt:"The browning of the cut surface of an apple or potato",answer:"enzymic browning",lv:1},
+  {prompt:"The process by which sugar turns brown when heated without water",answer:"caramelisation",lv:1},
+  {prompt:"The browning reaction between protein and sugar during cooking",answer:"maillard reaction",lv:1},
+  {prompt:"The temperature at which bacteria are most likely to multiply",answer:"danger zone 5 to 63 degrees",lv:1},
+  {prompt:"The internal temperature cooked chicken must reach",answer:"75 degrees Celsius",lv:1},
+  {prompt:"The maximum fridge temperature for safe food storage",answer:"5 degrees Celsius",lv:1},
+  {prompt:"The tiny living things that cause food spoilage and illness",answer:"micro-organisms",lv:1},
+  {prompt:"The three types of micro-organisms that spoil food",answer:"bacteria moulds yeasts",lv:1},
+  {prompt:"The process of cooling cooked food rapidly to prevent bacterial growth",answer:"blast chilling",lv:1},
+  {prompt:"The change in texture of gelatinised starch on cooling",answer:"gelation",lv:1},
+  {prompt:"The process that makes bread dough rise",answer:"fermentation",lv:1},
+  {prompt:"The gas produced by yeast during fermentation",answer:"carbon dioxide",lv:1},
+  {prompt:"The substance yeast produces along with carbon dioxide",answer:"alcohol",lv:1},
+  {prompt:"The method of cooking that uses dry heat in an oven",answer:"baking",lv:1},
+  {prompt:"The raising agent that produces carbon dioxide when heated",answer:"baking powder",lv:1},
+  {prompt:"The raising agent in self-raising flour",answer:"baking powder",lv:1},
+
+  // Level 2 — food preservation methods
+  {prompt:"The preservation method that removes water from food",answer:"dehydration",lv:2},
+  {prompt:"The preservation method that uses heat to kill micro-organisms in cans",answer:"sterilisation",lv:2},
+  {prompt:"The milder heat treatment that kills pathogens but not all bacteria",answer:"pasteurisation",lv:2},
+  {prompt:"The temperature used in pasteurisation of milk",answer:"72 degrees for 15 seconds",lv:2},
+  {prompt:"The preservation method that uses very high temperatures for a short time",answer:"UHT",lv:2},
+  {prompt:"The preservation method that stores food below minus 18 degrees",answer:"freezing",lv:2},
+  {prompt:"The gas used in modified atmosphere packaging to slow spoilage",answer:"carbon dioxide or nitrogen",lv:2},
+  {prompt:"The preservation method that uses salt or sugar to draw out water",answer:"curing",lv:2},
+  {prompt:"The preservation method that uses acid to prevent microbial growth",answer:"pickling",lv:2},
+  {prompt:"The natural preservative in jam that prevents mould growth",answer:"sugar",lv:2},
+  {prompt:"The preservative added to many processed meats",answer:"sodium nitrite",lv:2},
+  {prompt:"The E number category that includes preservatives",answer:"E200 series",lv:2},
+  {prompt:"The packaging method that removes all air from around food",answer:"vacuum packaging",lv:2},
+  {prompt:"The benefit of freezing food quickly rather than slowly",answer:"smaller ice crystals less cell damage better texture",lv:2},
+  {prompt:"The term for ice crystals that form on frozen food due to temperature fluctuation",answer:"freezer burn",lv:2},
+  {prompt:"The preservation method that exposes food to radiation",answer:"irradiation",lv:2},
+  {prompt:"The longest-lasting type of UHT milk",answer:"six months at room temperature",lv:2},
+
+  // Level 3 — food additives and labelling
+  {prompt:"The code system used to identify food additives in the EU",answer:"E numbers",lv:3},
+  {prompt:"An additive that prevents fat and water separating",answer:"emulsifier",lv:3},
+  {prompt:"An example of a natural emulsifier",answer:"lecithin",lv:3},
+  {prompt:"An additive that prevents food from going off through oxidation",answer:"antioxidant",lv:3},
+  {prompt:"An additive that improves the colour of food",answer:"colouring",lv:3},
+  {prompt:"An additive that enhances the flavour of food",answer:"flavour enhancer",lv:3},
+  {prompt:"The most common flavour enhancer",answer:"monosodium glutamate",lv:3},
+  {prompt:"An additive that prevents caking in powdered foods",answer:"anti-caking agent",lv:3},
+  {prompt:"The information that must appear on all food labels in Ireland",answer:"name weight ingredients date nutrition allergens",lv:3},
+  {prompt:"The date that tells you when food is no longer safe to eat",answer:"use by date",lv:3},
+  {prompt:"The date that tells you when food is past its best quality",answer:"best before date",lv:3},
+  {prompt:"The 14 major allergens that must be highlighted on labels",answer:"include milk eggs gluten nuts",lv:3},
+  {prompt:"The EU regulation governing food labelling",answer:"EU food information regulation 1169",lv:3},
+  {prompt:"The traffic light system on food labels shows levels of",answer:"fat saturated fat salt sugar",lv:3},
+  {prompt:"What GDA stands for on food labels",answer:"guideline daily amount",lv:3},
+  {prompt:"The reason additives must be approved before use in the EU",answer:"safety must be proven by EFSA",lv:3},
+  {prompt:"The agency that approves food additives in the EU",answer:"EFSA",lv:3},
+
+  // Level 4 — food spoilage and safety
+  {prompt:"The four conditions bacteria need to multiply",answer:"food warmth moisture time",lv:4},
+  {prompt:"The illness caused by eating food contaminated with bacteria",answer:"food poisoning",lv:4},
+  {prompt:"The bacterium most associated with poultry and eggs",answer:"salmonella",lv:4},
+  {prompt:"The bacterium found in undercooked beef burgers",answer:"E. coli",lv:4},
+  {prompt:"The bacterium associated with soft cheeses and paté",answer:"listeria",lv:4},
+  {prompt:"The toxin produced by bacteria growing in canned food",answer:"botulinum toxin",lv:4},
+  {prompt:"The bacterium that causes the most food poisoning in Ireland",answer:"campylobacter",lv:4},
+  {prompt:"The term for the transfer of bacteria from raw to cooked food",answer:"cross contamination",lv:4},
+  {prompt:"The correct order for storing foods in a fridge",answer:"cooked top raw meat bottom",lv:4},
+  {prompt:"Why you should never refreeze thawed food",answer:"bacteria multiply during thawing and refreezing worsens it",lv:4},
+  {prompt:"The number of times food can be safely reheated",answer:"once",lv:4},
+  {prompt:"The personal hygiene rule that prevents most food contamination",answer:"handwashing",lv:4},
+  {prompt:"The EU regulation governing food hygiene in catering",answer:"HACCP",lv:4},
+  {prompt:"What HACCP stands for",answer:"hazard analysis critical control points",lv:4},
+  {prompt:"The body temperature at which a food handler must not work",answer:"above 38 degrees",lv:4},
+  {prompt:"A physical food hazard",answer:"glass bone hair metal",lv:4},
+  {prompt:"A chemical food hazard",answer:"pesticides cleaning products",lv:4},
+
+  // Level 5 — functional properties
+  {prompt:"The property of protein that allows it to set when heated",answer:"coagulation",lv:5},
+  {prompt:"The property of egg white that allows it to hold air when whisked",answer:"foam formation",lv:5},
+  {prompt:"The property of fat that allows it to make pastry short",answer:"shortening",lv:5},
+  {prompt:"The property of gluten that allows bread dough to stretch",answer:"elasticity",lv:5},
+  {prompt:"The proteins in flour that form gluten when mixed with water",answer:"glutenin and gliadin",lv:5},
+  {prompt:"The property that allows gelatine to set liquids",answer:"gel formation",lv:5},
+  {prompt:"The ability of an emulsifier to hold oil and water together",answer:"emulsification",lv:5},
+  {prompt:"The term for the network of gluten that traps gas in bread",answer:"gluten network",lv:5},
+  {prompt:"Why fat is rubbed into flour when making shortcrust pastry",answer:"to coat flour and shorten gluten strands",lv:5},
+  {prompt:"The reason egg yolk is used in mayonnaise",answer:"it contains lecithin which is an emulsifier",lv:5},
+  {prompt:"The property of sugar that makes meringue stable",answer:"hygroscopic — absorbs water and stabilises foam",lv:5},
+  {prompt:"The effect of acid on egg white foam",answer:"stabilises the foam and strengthens it",lv:5},
+  {prompt:"Why cream of tartar is added when making meringue",answer:"it stabilises the egg white foam",lv:5},
+  {prompt:"The property that allows agar agar to set a liquid",answer:"gel formation",lv:5},
+  {prompt:"The plant-based alternative to gelatine",answer:"agar agar",lv:5},
+  {prompt:"Why oil and water do not naturally mix",answer:"oil is non-polar water is polar they repel",lv:5},
+  {prompt:"The type of emulsion in milk",answer:"oil in water emulsion",lv:5},
+  {prompt:"The type of emulsion in butter",answer:"water in oil emulsion",lv:5},
+
+  // Level 6 — food technology and processing
+  {prompt:"The process of removing fat from milk",answer:"centrifugation or skimming",lv:6},
+  {prompt:"The process that homogenises milk",answer:"forcing through fine nozzles to break up fat globules",lv:6},
+  {prompt:"Why homogenised milk does not separate",answer:"fat globules are broken too small to rise",lv:6},
+  {prompt:"The process of converting milk to yoghurt",answer:"lactic acid fermentation",lv:6},
+  {prompt:"The bacteria used in yoghurt production",answer:"lactobacillus bulgaricus and streptococcus thermophilus",lv:6},
+  {prompt:"The role of rennet in cheese-making",answer:"it coagulates the milk protein casein",lv:6},
+  {prompt:"The protein in milk that coagulates to form cheese",answer:"casein",lv:6},
+  {prompt:"The process that separates curds from whey in cheese-making",answer:"coagulation and straining",lv:6},
+  {prompt:"The term for genetically modified organisms in food",answer:"GMO",lv:6},
+  {prompt:"An argument for GM food",answer:"higher yields drought resistance improved nutrition",lv:6},
+  {prompt:"An argument against GM food",answer:"unknown long-term effects biodiversity risk corporate control",lv:6},
+  {prompt:"The term for food produced without artificial chemicals",answer:"organic food",lv:6},
+  {prompt:"The Irish organic certification body",answer:"organic trust or IOFGA",lv:6},
+  {prompt:"The term for buying food produced close to home",answer:"local food",lv:6},
+  {prompt:"The environmental benefit of local food",answer:"reduced food miles and carbon emissions",lv:6},
+  {prompt:"The term for the full environmental journey of a food product",answer:"food miles",lv:6},
+
+  // Level 7 — higher-order food science
+  {prompt:"The chemical reaction that makes cut potatoes turn brown without lemon juice",answer:"enzymic browning due to polyphenol oxidase",lv:7},
+  {prompt:"How blanching prevents enzymic browning in frozen vegetables",answer:"heat inactivates the enzyme polyphenol oxidase",lv:7},
+  {prompt:"The effect of pH on enzyme activity",answer:"enzymes work best at an optimal pH and denature outside it",lv:7},
+  {prompt:"Why vitamin C prevents enzymic browning",answer:"it is an antioxidant that reduces oxidation",lv:7},
+  {prompt:"The science behind sous vide cooking",answer:"precise low-temperature cooking in vacuum sealed bags",lv:7},
+  {prompt:"The Maillard reaction requires what two components",answer:"amino acids and reducing sugars",lv:7},
+  {prompt:"Why the Maillard reaction does not occur in boiling",answer:"temperature is not high enough above 140 degrees needed",lv:7},
+  {prompt:"The difference between gelatinisation and gelation",answer:"gelatinisation is starch swelling on heating gelation is setting on cooling",lv:7},
+  {prompt:"The effect of acid on gelatinisation",answer:"acid weakens starch granules and reduces thickening",lv:7},
+  {prompt:"The retrogradation of starch causes what in bread",answer:"staling — starch recrystallises and bread goes firm",lv:7},
+  {prompt:"Why adding fat delays bread staling",answer:"fat coats starch granules slowing retrogradation",lv:7},
+  {prompt:"The effect of sugar on the boiling point of a solution",answer:"raises the boiling point",lv:7},
+  {prompt:"The temperature at which jam reaches setting point",answer:"104 to 105 degrees Celsius",lv:7},
+  {prompt:"Why lemon juice is added to jam",answer:"pectin needs acid to form a gel",lv:7},
+
+  // Level 8 — evaluation and novel food science
+  {prompt:"Evaluate the use of food additives in modern food production",answer:"convenience and safety benefits vs health concerns and over-processing",lv:8},
+  {prompt:"The sustainability concern with ultra-processed foods",answer:"high energy to produce low nutrition poor environmental footprint",lv:8},
+  {prompt:"The NOVA classification system categorises food by",answer:"degree of processing",lv:8},
+  {prompt:"NOVA group 4 foods are",answer:"ultra-processed foods",lv:8},
+  {prompt:"The health concern associated with NOVA group 4 foods",answer:"linked to obesity diabetes cancer",lv:8},
+  {prompt:"The term for foods that have a positive effect beyond basic nutrition",answer:"functional foods",lv:8},
+  {prompt:"An example of a functional food",answer:"probiotic yoghurt or fortified milk",lv:8},
+  {prompt:"The term for bacteria that benefit gut health",answer:"probiotics",lv:8},
+  {prompt:"The term for food that feeds beneficial gut bacteria",answer:"prebiotic",lv:8},
+  {prompt:"An example of a prebiotic food",answer:"garlic onion banana oats",lv:8},
+  {prompt:"The role of the gut microbiome in health",answer:"immunity digestion mental health inflammation",lv:8},
+  {prompt:"Evaluate the environmental impact of the global food system",answer:"accounts for 30 percent of greenhouse gas emissions deforestation water use",lv:8},
+],
+
+// ============================================================
+// CONSUMER STUDIES
+// ============================================================
+consumer: [
+  // Level 1 — consumer rights basics
+  {prompt:"The right that says goods must be fit for their purpose",answer:"right to quality goods",lv:1},
+  {prompt:"The three remedies a consumer is entitled to when goods are faulty",answer:"repair replacement refund",lv:1},
+  {prompt:"The main Act protecting consumer rights in Ireland",answer:"Sale of Goods and Supply of Services Act 1980",lv:1},
+  {prompt:"The organisation that provides free advice to consumers in Ireland",answer:"Competition and Consumer Protection Commission",lv:1},
+  {prompt:"What the CCPC stands for",answer:"Competition and Consumer Protection Commission",lv:1},
+  {prompt:"The term for buying goods on credit and paying in instalments",answer:"hire purchase",lv:1},
+  {prompt:"The type of loan where the family home is used as security",answer:"mortgage",lv:1},
+  {prompt:"The term for the interest charged on a loan expressed as a percentage",answer:"APR",lv:1},
+  {prompt:"What APR stands for",answer:"annual percentage rate",lv:1},
+  {prompt:"The government body that regulates banks and financial services",answer:"Central Bank of Ireland",lv:1},
+  {prompt:"The term for a plan showing income and planned expenditure",answer:"budget",lv:1},
+  {prompt:"The document that shows all transactions in a bank account",answer:"bank statement",lv:1},
+  {prompt:"The term for money owed",answer:"debt",lv:1},
+  {prompt:"The term for money earned after tax",answer:"net income or take-home pay",lv:1},
+  {prompt:"The term for money earned before tax",answer:"gross income",lv:1},
+  {prompt:"The deduction from wages that funds social welfare",answer:"PRSI",lv:1},
+  {prompt:"The deduction from wages that funds health services",answer:"USC or universal social charge",lv:1},
+  {prompt:"What PRSI stands for",answer:"pay related social insurance",lv:1},
+
+  // Level 2 — consumer legislation
+  {prompt:"The Act that protects consumers buying services",answer:"Sale of Goods and Supply of Services Act 1980",lv:2},
+  {prompt:"The right to return goods bought online within a set period",answer:"14 days cooling off period",lv:2},
+  {prompt:"The EU directive that protects online shoppers",answer:"Consumer Rights Directive 2011",lv:2},
+  {prompt:"The Act that covers product safety standards",answer:"Consumer Protection Act 2007",lv:2},
+  {prompt:"The organisation that mediates between consumers and traders",answer:"CCPC",lv:2},
+  {prompt:"The small claims procedure for amounts under 2000 euros",answer:"small claims court",lv:2},
+  {prompt:"The term for misleading advertising",answer:"false or misleading claims",lv:2},
+  {prompt:"The authority that regulates advertising standards in Ireland",answer:"ASAI",lv:2},
+  {prompt:"What ASAI stands for",answer:"Advertising Standards Authority for Ireland",lv:2},
+  {prompt:"The EU body that handles cross-border consumer disputes",answer:"ECC Ireland",lv:2},
+  {prompt:"The document that forms a legally binding agreement",answer:"contract",lv:2},
+  {prompt:"The four elements needed for a valid contract",answer:"offer acceptance consideration intention",lv:2},
+  {prompt:"The term for the price a retailer pays for goods from a supplier",answer:"trade price or wholesale price",lv:2},
+  {prompt:"The term for price discrimination based on customer profiling",answer:"personalised pricing",lv:2},
+  {prompt:"The EU regulation protecting personal data",answer:"GDPR",lv:2},
+  {prompt:"What GDPR stands for",answer:"general data protection regulation",lv:2},
+  {prompt:"The right to see data a company holds on you",answer:"right of access",lv:2},
+
+  // Level 3 — household budgeting
+  {prompt:"Fixed expenses that must be paid regularly",answer:"rent mortgage insurance",lv:3},
+  {prompt:"Variable expenses that change from week to week",answer:"food entertainment clothing",lv:3},
+  {prompt:"The term for money left over after all expenses",answer:"surplus",lv:3},
+  {prompt:"The term for when expenditure exceeds income",answer:"deficit",lv:3},
+  {prompt:"The recommended percentage of income to save",answer:"10 percent",lv:3},
+  {prompt:"The term for spending money as you earn it",answer:"living from hand to mouth",lv:3},
+  {prompt:"The term for the total money coming into a household",answer:"income",lv:3},
+  {prompt:"A source of non-earned income for families",answer:"child benefit or social welfare or investment",lv:3},
+  {prompt:"The government payment made to all families with children",answer:"child benefit",lv:3},
+  {prompt:"The term for long-term savings held in a financial institution",answer:"deposit account",lv:3},
+  {prompt:"The advantage of a credit union over a bank for borrowing",answer:"lower interest rates community ownership",lv:3},
+  {prompt:"A disadvantage of hire purchase",answer:"expensive overall cost higher than cash price",lv:3},
+  {prompt:"The term for the amount borrowed not including interest",answer:"principal",lv:3},
+  {prompt:"The type of insurance that covers the contents of a home",answer:"contents insurance",lv:3},
+  {prompt:"The type of insurance required by law if you drive a car",answer:"third party insurance",lv:3},
+  {prompt:"The body that regulates insurance companies in Ireland",answer:"Central Bank of Ireland",lv:3},
+  {prompt:"The government scheme that gives tax relief on pension contributions",answer:"pension relief",lv:3},
+
+  // Level 4 — smart consumer choices
+  {prompt:"The term for comparing the price per unit of products",answer:"unit price comparison",lv:4},
+  {prompt:"The best way to compare value between different sized packs",answer:"calculate cost per 100 grams",lv:4},
+  {prompt:"The label that tells you a product meets environmental standards",answer:"ecolabel or environmental mark",lv:4},
+  {prompt:"The Irish quality mark on food products",answer:"Bord Bia quality mark",lv:4},
+  {prompt:"The organic certification symbol in Ireland",answer:"organic trust logo",lv:4},
+  {prompt:"The Fairtrade symbol guarantees",answer:"fair wages for producers in developing countries",lv:4},
+  {prompt:"The term for choosing products that cause less environmental harm",answer:"ethical or sustainable consumer choice",lv:4},
+  {prompt:"The term for buying goods online from outside the EU",answer:"distance selling",lv:4},
+  {prompt:"A risk of buying online from outside the EU",answer:"customs charges no EU consumer protection",lv:4},
+  {prompt:"The term for the psychological trick of pricing goods at 9.99",answer:"psychological pricing",lv:4},
+  {prompt:"The term for offering extra products free to encourage spending",answer:"bundling",lv:4},
+  {prompt:"A disadvantage of loyalty cards for consumers",answer:"data collected and used for targeted marketing",lv:4},
+  {prompt:"The term for companies that control prices in a market",answer:"price fixing or cartel",lv:4},
+  {prompt:"The EU body that prevents anti-competitive behaviour",answer:"European Commission competition authority",lv:4},
+  {prompt:"The right of a consumer if goods develop a fault within 2 years in the EU",answer:"two year statutory guarantee",lv:4},
+  {prompt:"The difference between a guarantee and a warranty",answer:"guarantee is free warranty is paid",lv:4},
+  {prompt:"The Act that makes unsolicited marketing calls illegal",answer:"ePrivacy regulations",lv:4},
+
+  // Level 5 — housing and financial products
+  {prompt:"The term for the percentage of a home's value paid upfront",answer:"deposit",lv:5},
+  {prompt:"The minimum deposit required by Central Bank rules for first-time buyers",answer:"10 percent",lv:5},
+  {prompt:"The maximum amount a bank can lend relative to income",answer:"3.5 times annual income",lv:5},
+  {prompt:"The term for a mortgage where repayments are the same every month",answer:"fixed rate mortgage",lv:5},
+  {prompt:"The type of mortgage where the rate follows the market",answer:"variable rate mortgage",lv:5},
+  {prompt:"The government help-to-buy scheme gives first-time buyers",answer:"income tax refund of up to 30000 euros",lv:5},
+  {prompt:"The term for the legal transfer of property ownership",answer:"conveyancing",lv:5},
+  {prompt:"The professional who carries out the legal work in house purchase",answer:"solicitor",lv:5},
+  {prompt:"The professional who values a property for a mortgage",answer:"valuer or surveyor",lv:5},
+  {prompt:"The term for a loan secured on property",answer:"secured loan",lv:5},
+  {prompt:"The term for a loan with no asset as security",answer:"unsecured loan",lv:5},
+  {prompt:"The highest cost form of short-term borrowing",answer:"credit card or moneylender",lv:5},
+  {prompt:"The legal maximum APR a moneylender can charge in Ireland",answer:"no statutory cap but must be licensed",lv:5},
+  {prompt:"The organisation that helps people with problem debt in Ireland",answer:"MABS",lv:5},
+  {prompt:"What MABS stands for",answer:"money advice and budgeting service",lv:5},
+  {prompt:"The term for when a bank takes back a property due to missed payments",answer:"repossession",lv:5},
+  {prompt:"The negative impact on a consumer who defaults on a loan",answer:"poor credit rating difficulty borrowing in future",lv:5},
+
+  // Level 6 — evaluating consumer society
+  {prompt:"The term for consuming more than is needed",answer:"consumerism",lv:6},
+  {prompt:"The environmental consequence of excessive consumption",answer:"waste depletion of resources climate change",lv:6},
+  {prompt:"The principle of buying less but better quality",answer:"sustainable consumption",lv:6},
+  {prompt:"The term for products designed to break down quickly to force repurchase",answer:"planned obsolescence",lv:6},
+  {prompt:"The EU circular economy strategy aims to",answer:"reduce waste and keep materials in use longer",lv:6},
+  {prompt:"The term for the full environmental cost of a product's life",answer:"lifecycle assessment",lv:6},
+  {prompt:"The term for goods sold second-hand",answer:"pre-owned or preloved goods",lv:6},
+  {prompt:"The benefit of the circular economy for consumers",answer:"lower costs longer lasting products less waste",lv:6},
+  {prompt:"The term for marketing that falsely claims environmental benefits",answer:"greenwashing",lv:6},
+  {prompt:"An example of greenwashing",answer:"calling a product natural or eco when it is not",lv:6},
+  {prompt:"The EU Green Deal aims to make Europe",answer:"climate neutral by 2050",lv:6},
+  {prompt:"The right to repair legislation requires",answer:"manufacturers to make goods repairable for 10 years",lv:6},
+  {prompt:"The advantage of buying locally produced food for the consumer",answer:"fresher traceable supports local economy",lv:6},
+  {prompt:"The term for a business owned and run by its members",answer:"cooperative",lv:6},
+  {prompt:"An example of a consumer cooperative in Ireland",answer:"credit union",lv:6},
+
+  // Level 7 — synthesis
+  {prompt:"Evaluate the impact of social media advertising on young consumers",answer:"creates unrealistic expectations encourages debt impulse buying",lv:7},
+  {prompt:"The term for advertising targeted at children",answer:"pester power marketing",lv:7},
+  {prompt:"The EU regulation limiting advertising to children",answer:"audiovisual media services directive",lv:7},
+  {prompt:"Why financial literacy should be taught in schools",answer:"prevents debt poor decisions vulnerability to exploitation",lv:7},
+  {prompt:"The argument for a universal basic income from a consumer perspective",answer:"floor of spending power reduces poverty drives local economy",lv:7},
+  {prompt:"The term for the unequal access to financial services",answer:"financial exclusion",lv:7},
+  {prompt:"Groups at risk of financial exclusion in Ireland",answer:"elderly rural low income communities",lv:7},
+  {prompt:"The term for predatory financial products targeting vulnerable people",answer:"sub-prime lending",lv:7},
+  {prompt:"Why the credit union model is considered more ethical than banks",answer:"not for profit member owned community focused",lv:7},
+  {prompt:"The consumer protection argument for regulating AI-driven pricing",answer:"personalised pricing exploits vulnerable consumers",lv:7},
+
+  // Level 8
+  {prompt:"Critically evaluate the concept of sustainable development in consumer society",answer:"balancing economic growth environmental protection and social equity",lv:8},
+  {prompt:"The term for using natural resources at a rate that allows regeneration",answer:"sustainable use",lv:8},
+  {prompt:"The UN sustainable development goal most relevant to consumption",answer:"goal 12 responsible consumption and production",lv:8},
+  {prompt:"The argument for taxing sugar-sweetened drinks",answer:"reduces consumption funds health services addresses obesity",lv:8},
+  {prompt:"Ireland's sugar sweetened drinks tax is called",answer:"SSDT",lv:8},
+  {prompt:"The argument against excessive regulation of consumer choice",answer:"paternalism restricts personal freedom",lv:8},
+  {prompt:"How behavioural economics influences consumer protection policy",answer:"nudge theory default settings to encourage better choices",lv:8},
+],
+
+// ============================================================
+// RESOURCE MANAGEMENT
+// ============================================================
+resource: [
+  // Level 1 — household management basics
+  {prompt:"The three types of resources a household manages",answer:"time money and human resources",lv:1},
+  {prompt:"The term for a written plan of household income and spending",answer:"household budget",lv:1},
+  {prompt:"The stage in the management process that sets goals",answer:"planning",lv:1},
+  {prompt:"The stage in the management process that puts the plan into action",answer:"implementing",lv:1},
+  {prompt:"The stage in the management process that checks if goals were met",answer:"evaluating",lv:1},
+  {prompt:"The term for the order in which tasks should be done",answer:"prioritising",lv:1},
+  {prompt:"A human resource within the family",answer:"skills knowledge energy time",lv:1},
+  {prompt:"The term for tasks in the home divided among family members",answer:"delegation",lv:1},
+  {prompt:"The type of resource that can be replenished",answer:"renewable resource",lv:1},
+  {prompt:"An example of a renewable energy source",answer:"solar wind hydro",lv:1},
+  {prompt:"An example of a non-renewable energy source",answer:"oil gas coal",lv:1},
+  {prompt:"The term for the amount of electricity used measured in units",answer:"kilowatt hours",lv:1},
+  {prompt:"The term for the amount of energy a home loses through poor insulation",answer:"heat loss",lv:1},
+  {prompt:"The rating system for energy efficiency in homes",answer:"BER rating",lv:1},
+  {prompt:"What BER stands for",answer:"building energy rating",lv:1},
+  {prompt:"The highest BER rating for energy efficiency",answer:"A1",lv:1},
+  {prompt:"The term for reducing, reusing and recycling",answer:"the three Rs",lv:1},
+  {prompt:"The government grant scheme for home energy upgrades",answer:"SEAI grants",lv:1},
+
+  // Level 2 — housing types and tenure
+  {prompt:"The four main types of housing tenure in Ireland",answer:"owner occupied rented social housing shared ownership",lv:2},
+  {prompt:"The housing authority that provides social housing",answer:"local authority",lv:2},
+  {prompt:"The system by which social housing is allocated",answer:"housing waiting list",lv:2},
+  {prompt:"The government payment to help low-income renters",answer:"housing assistance payment or HAP",lv:2},
+  {prompt:"The advantage of renting over buying",answer:"flexibility no mortgage deposit no maintenance cost",lv:2},
+  {prompt:"The advantage of buying over renting",answer:"asset building security stability",lv:2},
+  {prompt:"The legal document that sets out tenant and landlord rights",answer:"lease or tenancy agreement",lv:2},
+  {prompt:"The body that resolves disputes between landlords and tenants",answer:"RTB",lv:2},
+  {prompt:"What RTB stands for",answer:"residential tenancies board",lv:2},
+  {prompt:"The notice period a landlord must give a tenant to leave",answer:"depends on tenancy length minimum 90 days",lv:2},
+  {prompt:"The term for a flat within a converted house",answer:"bedsit or studio",lv:2},
+  {prompt:"The term for housing built to a high environmental standard",answer:"passive house",lv:2},
+  {prompt:"The key feature of a passive house",answer:"super insulated airtight minimal energy needed for heat",lv:2},
+  {prompt:"The term for housing that meets the needs of older or disabled residents",answer:"accessible or universal design housing",lv:2},
+  {prompt:"The planning document that sets out where development can happen",answer:"county development plan",lv:2},
+  {prompt:"The term for building on unused land within a town or city",answer:"infill development",lv:2},
+  {prompt:"The term for expanding a town outward onto greenfield land",answer:"urban sprawl",lv:2},
+
+  // Level 3 — home design and equipment
+  {prompt:"The principle of designing for all abilities and ages",answer:"universal design",lv:3},
+  {prompt:"The term for the most efficient layout of kitchen workspace",answer:"work triangle",lv:3},
+  {prompt:"The three points of the kitchen work triangle",answer:"cooker sink and fridge or preparation area",lv:3},
+  {prompt:"The energy rating system for household appliances",answer:"EU energy label A to G",lv:3},
+  {prompt:"The most energy efficient rating on the EU appliance label",answer:"A",lv:3},
+  {prompt:"The term for a contract covering repair of an appliance",answer:"service contract or extended warranty",lv:3},
+  {prompt:"The appliance that uses the most energy in the average home",answer:"tumble dryer or electric shower",lv:3},
+  {prompt:"The term for switching appliances off standby to save energy",answer:"standby energy or vampire power",lv:3},
+  {prompt:"The advantage of LED lighting over incandescent",answer:"uses 80 percent less energy lasts longer",lv:3},
+  {prompt:"The insulation material most commonly used in attics",answer:"fibreglass or mineral wool",lv:3},
+  {prompt:"The home improvement with the best return on energy saving",answer:"attic insulation",lv:3},
+  {prompt:"The term for heat escaping through uninsulated walls",answer:"thermal bridging",lv:3},
+  {prompt:"The type of window that reduces heat loss most effectively",answer:"triple glazed window",lv:3},
+  {prompt:"The feature of a smart meter that helps manage energy use",answer:"real-time energy monitoring",lv:3},
+  {prompt:"The government body responsible for energy efficiency in Ireland",answer:"SEAI",lv:3},
+  {prompt:"What SEAI stands for",answer:"sustainable energy authority of Ireland",lv:3},
+
+  // Level 4 — environmental management
+  {prompt:"The term for gases that trap heat in the atmosphere",answer:"greenhouse gases",lv:4},
+  {prompt:"The main greenhouse gas from human activity",answer:"carbon dioxide",lv:4},
+  {prompt:"The term for the total greenhouse gas emissions of a household",answer:"carbon footprint",lv:4},
+  {prompt:"Three ways a household can reduce its carbon footprint",answer:"insulate reduce meat eat local use renewable energy",lv:4},
+  {prompt:"The term for energy produced from the sun",answer:"solar energy",lv:4},
+  {prompt:"The home technology that converts sunlight to electricity",answer:"photovoltaic panels",lv:4},
+  {prompt:"The home technology that uses sunlight to heat water",answer:"solar thermal panels",lv:4},
+  {prompt:"The government grant for solar panels in Ireland",answer:"SEAI solar PV grant",lv:4},
+  {prompt:"The term for energy generated from household waste",answer:"waste to energy",lv:4},
+  {prompt:"The waste hierarchy from most to least preferred",answer:"reduce reuse recycle recover dispose",lv:4},
+  {prompt:"The colour of the bin for dry recyclable materials in Ireland",answer:"green bin",lv:4},
+  {prompt:"The colour of the bin for food and garden waste",answer:"brown bin",lv:4},
+  {prompt:"The term for breaking down organic waste using microbes",answer:"composting",lv:4},
+  {prompt:"The term for sending waste to landfill",answer:"landfill disposal",lv:4},
+  {prompt:"The EU directive that sets targets for reducing landfill",answer:"landfill directive",lv:4},
+  {prompt:"The hazardous household waste that must not go in general bins",answer:"batteries paint chemicals electrical items",lv:4},
+  {prompt:"The term for household hazardous waste collection events",answer:"civic amenity site or bring centre",lv:4},
+
+  // Level 5 — household management theory
+  {prompt:"The management theorist associated with scientific management",answer:"Frederick Winslow Taylor",lv:5},
+  {prompt:"The principle that workers should specialise in one task",answer:"division of labour",lv:5},
+  {prompt:"Maslow's theory organises human needs in order of",answer:"priority from basic to self-actualisation",lv:5},
+  {prompt:"The most basic level of Maslow's hierarchy of needs",answer:"physiological needs food water shelter",lv:5},
+  {prompt:"The highest level of Maslow's hierarchy",answer:"self-actualisation",lv:5},
+  {prompt:"The management concept of doing more with less",answer:"efficiency",lv:5},
+  {prompt:"The management concept of achieving the desired outcome",answer:"effectiveness",lv:5},
+  {prompt:"The term for sharing out household responsibilities fairly",answer:"equitable division of labour",lv:5},
+  {prompt:"The term for the unpaid work done in the home",answer:"domestic labour",lv:5},
+  {prompt:"The argument for valuing unpaid domestic labour",answer:"it has economic value and supports the workforce",lv:5},
+  {prompt:"The term for combining paid work and family responsibilities",answer:"work life balance",lv:5},
+  {prompt:"A government policy supporting work life balance",answer:"parental leave shared paternity leave",lv:5},
+  {prompt:"The term for flexibility in when and where work is done",answer:"flexible working",lv:5},
+  {prompt:"The term for a management style that involves the whole family in decisions",answer:"democratic family management",lv:5},
+  {prompt:"The advantage of meal planning for household management",answer:"saves money reduces waste saves time",lv:5},
+  {prompt:"The term for preparing several meals at once to save time",answer:"batch cooking",lv:5},
+  {prompt:"The standard of quality for household services and tradespeople",answer:"reasonable care and skill",lv:5},
+
+  // Level 6 — housing and social issues
+  {prompt:"The main cause of homelessness in Ireland",answer:"lack of affordable housing",lv:6},
+  {prompt:"The government strategy to address homelessness",answer:"housing for all strategy",lv:6},
+  {prompt:"The term for rising house prices relative to income",answer:"housing affordability crisis",lv:6},
+  {prompt:"The social consequence of overcrowded housing",answer:"poor health outcomes educational disadvantage mental ill-health",lv:6},
+  {prompt:"The term for housing specifically for older people",answer:"sheltered housing or retirement village",lv:6},
+  {prompt:"The term for living in the same community across generations",answer:"intergenerational living",lv:6},
+  {prompt:"The government body responsible for housing policy in Ireland",answer:"Department of Housing Local Government and Heritage",lv:6},
+  {prompt:"The term for converting older buildings into new homes",answer:"retrofitting or regeneration",lv:6},
+  {prompt:"The benefit of retrofitting older housing stock",answer:"reduces carbon emissions improves comfort reduces bills",lv:6},
+  {prompt:"The term for housing built to meet climate targets",answer:"nearly zero energy building or NZEB",lv:6},
+
+  // Level 7 — evaluation and synthesis
+  {prompt:"Evaluate the impact of the housing crisis on family wellbeing",answer:"stress insecurity poor health limits educational and work opportunities",lv:7},
+  {prompt:"The argument for greater government intervention in the housing market",answer:"market failure leaves vulnerable people without homes",lv:7},
+  {prompt:"The argument against excessive government regulation of housing",answer:"reduces supply disincentivises investment",lv:7},
+  {prompt:"The term for the social cost of inadequate housing",answer:"social determinant of health",lv:7},
+  {prompt:"Why energy poverty is a social justice issue",answer:"low income households cannot afford to heat homes adequately",lv:7},
+  {prompt:"The term for households spending more than 10 percent of income on energy",answer:"energy poverty",lv:7},
+  {prompt:"Government measures to address energy poverty in Ireland",answer:"free fuel allowance SEAI grants energy credits",lv:7},
+  {prompt:"The term for the total amount of energy used by a home in a year",answer:"annual energy consumption",lv:7},
+  {prompt:"The link between housing quality and educational attainment",answer:"overcrowded cold housing impairs concentration and study",lv:7},
+
+  // Level 8
+  {prompt:"Evaluate Ireland's response to the housing crisis",answer:"insufficient social housing supply planning delays NIMBY attitudes financialisation of housing",lv:8},
+  {prompt:"The term for investment funds buying up housing stock",answer:"institutional investors or REITs",lv:8},
+  {prompt:"The argument that housing is a human right",answer:"UN declaration article 25 adequate standard of living includes housing",lv:8},
+  {prompt:"The impact of climate change on housing policy",answer:"need for low carbon buildings flood resilience passive design",lv:8},
+  {prompt:"The term for the long-term plan for sustainable development in Ireland",answer:"Project Ireland 2040",lv:8},
+],
+
+// ============================================================
+// SOCIAL STUDIES
+// ============================================================
+social: [
+  // Level 1 — family types and structures
+  {prompt:"A family consisting of two parents and their children",answer:"nuclear family",lv:1},
+  {prompt:"A family with grandparents and extended relatives living together",answer:"extended family",lv:1},
+  {prompt:"A family headed by one parent",answer:"lone parent family",lv:1},
+  {prompt:"A family formed when two partners with children from previous relationships join",answer:"blended or reconstituted family",lv:1},
+  {prompt:"A family where two same-sex parents raise children",answer:"same-sex family",lv:1},
+  {prompt:"The term for a couple without children",answer:"childless or child-free couple",lv:1},
+  {prompt:"The term for two people living together without marrying",answer:"cohabitation",lv:1},
+  {prompt:"The legal ending of a marriage",answer:"divorce",lv:1},
+  {prompt:"The legal separation that does not end a marriage",answer:"judicial separation",lv:1},
+  {prompt:"The legal process of taking a child permanently into a family",answer:"adoption",lv:1},
+  {prompt:"The care of a child by a non-parent on a temporary basis",answer:"fostering",lv:1},
+  {prompt:"The term for the role carried out by the family in socialising children",answer:"primary socialisation",lv:1},
+  {prompt:"The term for values children learn from society outside the family",answer:"secondary socialisation",lv:1},
+  {prompt:"The term for the economic and emotional support families provide",answer:"family functions",lv:1},
+  {prompt:"The five functions of the family",answer:"biological economic socialisation emotional protective",lv:1},
+  {prompt:"The term for the increasing variety of family types in Ireland",answer:"family diversity",lv:1},
+  {prompt:"The constitutional protection for the family in Ireland",answer:"Article 41 of the Constitution",lv:1},
+
+  // Level 2 — child development stages
+  {prompt:"The theorist who described stages of cognitive development in children",answer:"Piaget",lv:2},
+  {prompt:"Piaget's first stage of development from birth to 2 years",answer:"sensorimotor stage",lv:2},
+  {prompt:"Piaget's stage from 2 to 7 years involving symbolic thinking",answer:"pre-operational stage",lv:2},
+  {prompt:"The theorist who described stages of psychosocial development",answer:"Erikson",lv:2},
+  {prompt:"Erikson's first stage — trust vs mistrust — occurs in",answer:"infancy 0 to 18 months",lv:2},
+  {prompt:"The theorist who described the hierarchy of needs",answer:"Maslow",lv:2},
+  {prompt:"The term for a child's physical and mental development",answer:"holistic development",lv:2},
+  {prompt:"The four areas of child development",answer:"physical intellectual emotional social",lv:2},
+  {prompt:"The acronym for the four areas of child development",answer:"PIES",lv:2},
+  {prompt:"The term for learning by watching and copying others",answer:"observational learning or modelling",lv:2},
+  {prompt:"The attachment theorist who described the bond between mother and child",answer:"Bowlby",lv:2},
+  {prompt:"Bowlby's theory about the importance of early mother-child bonds",answer:"attachment theory",lv:2},
+  {prompt:"The critical period for language development in children",answer:"birth to 6 years",lv:2},
+  {prompt:"The theorist who described language acquisition in children",answer:"Chomsky",lv:2},
+  {prompt:"The term for the gradual loss of old skills in older age",answer:"cognitive decline",lv:2},
+  {prompt:"The developmental stage between childhood and adulthood",answer:"adolescence",lv:2},
+  {prompt:"The physical changes that occur during adolescence",answer:"puberty",lv:2},
+  {prompt:"The emotional challenge of adolescence according to Erikson",answer:"identity vs role confusion",lv:2},
+
+  // Level 3 — community and social issues
+  {prompt:"The term for the sense of belonging to a place or group",answer:"community",lv:3},
+  {prompt:"The three types of community",answer:"geographical interest virtual",lv:3},
+  {prompt:"The term for the shared norms and values in a society",answer:"social norms",lv:3},
+  {prompt:"The term for prejudice and discrimination based on age",answer:"ageism",lv:3},
+  {prompt:"The term for prejudice and discrimination based on gender",answer:"sexism",lv:3},
+  {prompt:"The term for prejudice and discrimination based on race",answer:"racism",lv:3},
+  {prompt:"The Irish Act that prohibits discrimination in employment on nine grounds",answer:"Employment Equality Act 1998",lv:3},
+  {prompt:"The Irish Act that prohibits discrimination in goods and services",answer:"Equal Status Act 2000",lv:3},
+  {prompt:"The body that enforces equality legislation in Ireland",answer:"Irish Human Rights and Equality Commission",lv:3},
+  {prompt:"The nine grounds of discrimination under Irish equality law",answer:"gender age race disability sexual orientation religion marital status family status membership of traveller community",lv:3},
+  {prompt:"The term for positive measures to increase diversity",answer:"positive action",lv:3},
+  {prompt:"The term for discrimination that is not obvious or deliberate",answer:"indirect discrimination",lv:3},
+  {prompt:"The term for unwanted behaviour related to a protected characteristic",answer:"harassment",lv:3},
+  {prompt:"The legal concept that treats all citizens equally under the law",answer:"equality before the law",lv:3},
+  {prompt:"The Irish Act that protects victims of domestic violence",answer:"Domestic Violence Act 2018",lv:3},
+  {prompt:"The government strategy to end domestic violence",answer:"zero tolerance strategy",lv:3},
+
+  // Level 4 — health and wellbeing
+  {prompt:"The WHO definition of health",answer:"complete physical mental and social wellbeing not merely absence of disease",lv:4},
+  {prompt:"The three dimensions of health",answer:"physical mental social",lv:4},
+  {prompt:"The term for the factors in society that affect health",answer:"social determinants of health",lv:4},
+  {prompt:"An example of a social determinant of health",answer:"income education housing employment",lv:4},
+  {prompt:"The health issue most associated with poverty in Ireland",answer:"higher rates of chronic illness shorter life expectancy",lv:4},
+  {prompt:"The term for the gap in health outcomes between rich and poor",answer:"health inequality",lv:4},
+  {prompt:"The health promotion model focusing on individual behaviour",answer:"lifestyle approach",lv:4},
+  {prompt:"The health promotion model focusing on social and economic factors",answer:"social model of health",lv:4},
+  {prompt:"The Irish government health promotion framework",answer:"Sláintecare",lv:4},
+  {prompt:"The aim of Sláintecare",answer:"universal healthcare free at point of access",lv:4},
+  {prompt:"The term for maintaining good mental health through daily practices",answer:"mental health maintenance",lv:4},
+  {prompt:"The term for the ability to cope with adversity",answer:"resilience",lv:4},
+  {prompt:"A protective factor for mental health in young people",answer:"strong relationships physical activity sense of purpose",lv:4},
+  {prompt:"The term for excessive and uncontrollable use of alcohol",answer:"alcohol dependence",lv:4},
+  {prompt:"The government strategy for reducing alcohol harm in Ireland",answer:"Public Health Alcohol Act 2018",lv:4},
+  {prompt:"The minimum unit pricing policy aims to",answer:"reduce harm by setting a floor price for alcohol",lv:4},
+  {prompt:"The term for illegal use of substances that alter mood",answer:"drug misuse",lv:4},
+
+  // Level 5 — changing Irish society
+  {prompt:"The term for the movement of people from rural to urban areas",answer:"urbanisation",lv:5},
+  {prompt:"The term for people coming to live in Ireland from other countries",answer:"immigration",lv:5},
+  {prompt:"The term for Irish people leaving Ireland to live elsewhere",answer:"emigration",lv:5},
+  {prompt:"The current population of Ireland approximately",answer:"5 million",lv:5},
+  {prompt:"The term for the increasing proportion of older people in society",answer:"ageing population",lv:5},
+  {prompt:"The social challenge of an ageing population",answer:"higher health and pension costs fewer workers to pay",lv:5},
+  {prompt:"The term for the number of births per woman in a population",answer:"fertility rate",lv:5},
+  {prompt:"The replacement level fertility rate",answer:"2.1 children per woman",lv:5},
+  {prompt:"The trend in Irish family size over recent decades",answer:"falling — smaller families later marriage later childbearing",lv:5},
+  {prompt:"The term for both parents working outside the home",answer:"dual income household",lv:5},
+  {prompt:"The social change in Ireland following the 2015 referendum",answer:"marriage equality for same-sex couples",lv:5},
+  {prompt:"The change in Irish law following the 2018 referendum",answer:"legalisation of abortion",lv:5},
+  {prompt:"The term for cultural and ethnic variety in a population",answer:"multiculturalism",lv:5},
+  {prompt:"The term for incorporating newcomers into Irish society",answer:"integration",lv:5},
+  {prompt:"The body that supports refugees and asylum seekers in Ireland",answer:"INIS or International Protection Office",lv:5},
+  {prompt:"The term for people fleeing persecution in their home country",answer:"refugees",lv:5},
+  {prompt:"The UN convention protecting the rights of refugees",answer:"1951 Refugee Convention",lv:5},
+
+  // Level 6 — poverty and social policy
+  {prompt:"The term for not having enough income to meet basic needs",answer:"absolute poverty",lv:6},
+  {prompt:"The term for having an income less than 60 percent of median income",answer:"relative poverty or at risk of poverty",lv:6},
+  {prompt:"The term for lacking goods and services considered normal in society",answer:"deprivation",lv:6},
+  {prompt:"The measure that combines income poverty and deprivation",answer:"consistent poverty",lv:6},
+  {prompt:"The Irish government target for consistent poverty",answer:"below 2 percent by 2025",lv:6},
+  {prompt:"The Irish government social protection payment for job seekers",answer:"jobseeker's allowance",lv:6},
+  {prompt:"The payment for families on low incomes with children",answer:"working family payment",lv:6},
+  {prompt:"The payment for people with disabilities who cannot work",answer:"disability allowance",lv:6},
+  {prompt:"The term for the poverty trap where working reduces welfare payments",answer:"poverty trap or unemployment trap",lv:6},
+  {prompt:"The term for the cycle where poverty passes from parent to child",answer:"intergenerational poverty",lv:6},
+  {prompt:"The cause of food poverty in Ireland",answer:"low income food price rises lack of cooking skills",lv:6},
+  {prompt:"The service that provides free meals to people in need",answer:"food bank or soup kitchen",lv:6},
+  {prompt:"The Irish government poverty strategy",answer:"Pathways to Work",lv:6},
+  {prompt:"The term for access to services in remote areas",answer:"rural deprivation",lv:6},
+  {prompt:"The body that publishes poverty statistics in Ireland",answer:"CSO or ESRI",lv:6},
+
+  // Level 7 — analysis and evaluation
+  {prompt:"Evaluate the impact of poverty on children's development",answer:"poor nutrition health problems educational disadvantage low self-esteem",lv:7},
+  {prompt:"The term for the social mobility barrier caused by wealth inequality",answer:"social immobility",lv:7},
+  {prompt:"The argument for universal child benefit regardless of income",answer:"universal supports reduce stigma and simplify systems",lv:7},
+  {prompt:"The term for care provided by family members without pay",answer:"informal care",lv:7},
+  {prompt:"The social value of informal care in Ireland",answer:"billions in economic value enables independence reduces hospitalisation",lv:7},
+  {prompt:"The government payment for carers",answer:"carer's allowance",lv:7},
+  {prompt:"The term for the state of complete physical mental and social wellbeing",answer:"health as defined by the WHO",lv:7},
+  {prompt:"Evaluate the effectiveness of the social welfare system in Ireland",answer:"reduces absolute poverty but consistent poverty remains high barriers to services",lv:7},
+  {prompt:"The argument for free universal childcare in Ireland",answer:"enables female workforce participation reduces poverty improves outcomes",lv:7},
+  {prompt:"The term for services available to all citizens regardless of income",answer:"universal services",lv:7},
+
+  // Level 8
+  {prompt:"Evaluate the impact of austerity on vulnerable families in Ireland",answer:"reduced services welfare cuts disproportionate impact on women children disabled",lv:8},
+  {prompt:"The term for the economic argument that reducing inequality benefits all",answer:"trickle up economics",lv:8},
+  {prompt:"The UN framework for measuring wellbeing beyond GDP",answer:"UN human development index",lv:8},
+  {prompt:"Ireland's ranking on the UN Human Development Index",answer:"consistently in the top 10 globally",lv:8},
+  {prompt:"The paradox of Ireland's high HDI and persistent poverty",answer:"wealth is unevenly distributed despite high average prosperity",lv:8},
+  {prompt:"The argument for a wealth tax in Ireland",answer:"reduce inequality fund public services housing healthcare",lv:8},
+  {prompt:"The term for governments providing a floor of basic services",answer:"welfare state or social floor",lv:8},
+  {prompt:"The UN Convention on the Rights of the Child requires",answer:"all children have rights to survival development protection participation",lv:8},
+]
+
+}; // end TERMS
+
+// ============================================================
+// GAME STATE
+// ============================================================
+const AUNTIE_UNLOCK = 5;
+const PENALTY_SECS = 20;
+const QUESTIONS_PER_ROUND = 5;
+
+var currentCat = 'nutrition';
+var currentLevel = 1;
+var currentItems = [];
+var startTime, timerInterval;
+
+const levelList = document.getElementById('level-list');
+const gameContainer = document.getElementById('game');
+const questionsContainer = document.getElementById('questions');
+const resultsContainer = document.getElementById('results');
+
+// ============================================================
+// STORAGE
+// ============================================================
+function storageKey(s) { return 'he_turbo_' + s; }
+function getUnlocked() { return parseInt(localStorage.getItem(storageKey('unlocked')) || '1'); }
+function setUnlocked(l) { if (l > getUnlocked()) localStorage.setItem(storageKey('unlocked'), l); }
+function getBest(c, l) { return localStorage.getItem(storageKey('best_' + c + '_' + l)); }
+function setBest(c, l, s) { var p = parseInt(getBest(c, l) || '0'); if (s > p) localStorage.setItem(storageKey('best_' + c + '_' + l), s); }
+
+function getTotalStars() {
+  var t = 0;
+  ['nutrition','foodscience','consumer','resource','social'].forEach(function(c) {
+    for (var v = 1; v <= 8; v++) t += parseInt(getBest(c, v) || '0');
+  });
+  return t;
+}
+
+function AuntieUnlocked() { return getTotalStars() >= AUNTIE_UNLOCK; }
+
+function getTurboData() {
+  var cats = ['nutrition','foodscience','consumer','resource','social'];
+  var labels = { nutrition:'Nutrition', foodscience:'Food Science', consumer:'Consumer Studies', resource:'Resource Management', social:'Social Studies' };
+  var data = {};
+  cats.forEach(function(c) {
+    data[c] = { label: labels[c], levels: {} };
+    for (var l = 1; l <= 8; l++) {
+      var s = getBest(c, l);
+      if (s) data[c].levels[l] = parseInt(s);
+    }
+  });
+  return data;
+}
+
+// ============================================================
+// CATEGORY SELECT
+// ============================================================
+function selectCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderLevels();
+}
+
+// ============================================================
+// RENDER LEVELS
+// ============================================================
+function renderLevels() {
+  levelList.style.display = 'flex';
+  gameContainer.style.display = 'none';
+  levelList.innerHTML = '';
+  updateProgress();
+
+  var unlocked = getUnlocked();
+  var zones = {
+    1: { label: 'Levels 1–3 · Core Knowledge' },
+    4: { label: 'Levels 4–5 · Application' },
+    6: { label: 'Levels 6–8 · Exam Standard' }
+  };
+
+  for (var i = 1; i <= 8; i++) {
+    if (zones[i]) {
+      var zl = document.createElement('div');
+      zl.className = 'zone-label';
+      zl.textContent = zones[i].label;
+      levelList.appendChild(zl);
+    }
+
+    var pool = getPool(currentCat, i);
+    if (pool.length === 0) continue; // skip levels with no data
+
+    var btn = document.createElement('button');
+    var best = getBest(currentCat, i);
+    var locked = i > unlocked;
+    var stars = best ? '⭐'.repeat(parseInt(best)) + '☆'.repeat(3 - parseInt(best)) : '';
+    var isAdv = i >= 6;
+
+    btn.className = 'level-btn' + (isAdv ? ' adv' : '');
+    btn.type = 'button';
+    btn.innerHTML = '<span>' + (locked ? '🔒 ' : '') + 'Level ' + i + ' <span style="font-size:0.72rem;opacity:0.6">(' + pool.length + ' items)</span></span>' +
+      '<span class="level-badge">' + (stars || (locked ? '' : '—')) + '</span>';
+    btn.disabled = locked;
+
+    (function(lv) {
+      btn.addEventListener('click', function() { startGame(lv); });
+    })(i);
+
+    levelList.appendChild(btn);
+  }
+
+  if (AuntieUnlocked()) {
+    var eb = document.createElement('button');
+    eb.type = 'button';
+    eb.textContent = '📋 Meet The Auntie →';
+    eb.className = 'level-btn Auntie-btn';
+    eb.addEventListener('click', function() {
+      localStorage.setItem('he_turbo_data', JSON.stringify(getTurboData()));
+      window.location.href = 'he-Auntie.html';
+    });
+    levelList.appendChild(eb);
+  }
+}
+
+// ============================================================
+// GET ITEM POOL FOR LEVEL (level + adjacent)
+// ============================================================
+function getPool(cat, level) {
+  return (TERMS[cat] || []).filter(function(p) { return p.lv === level; });
+}
+
+function getPlayPool(cat, level) {
+  var exact = (TERMS[cat] || []).filter(function(p) { return p.lv === level; });
+  var adjacent = (TERMS[cat] || []).filter(function(p) { return Math.abs(p.lv - level) === 1; });
+  return shuffleArray(exact.slice()).concat(shuffleArray(adjacent.slice()));
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame(level) {
+  currentLevel = level;
+  var pool = getPlayPool(currentCat, level);
+  currentItems = shuffleArray(pool.slice()).slice(0, QUESTIONS_PER_ROUND);
+
+  levelList.style.display = 'none';
+  gameContainer.style.display = 'block';
+  questionsContainer.innerHTML = '';
+  resultsContainer.innerHTML = '';
+
+  currentItems.forEach(function(item) {
+    var div = document.createElement('div');
+    div.innerHTML =
+      '<div><strong>' + escHtml(item.prompt) + '</strong></div>' +
+      '<input type="text" data-answer="' + escHtml(item.answer) + '" ' +
+      'placeholder="Type your answer..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
+    var inp = div.querySelector('input');
+    inp.addEventListener('paste', function(e) { e.preventDefault(); });
+    inp.addEventListener('drop', function(e) { e.preventDefault(); });
+    questionsContainer.appendChild(div);
+  });
+
+  startTimer();
+
+  // Focus first input
+  var first = questionsContainer.querySelector('input');
+  if (first) first.focus();
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(function() {
+    document.getElementById('timer').textContent = 'Time: ' + Math.floor((Date.now() - startTime) / 1000) + 's';
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+
+// ============================================================
+// SUBMIT
+// ============================================================
+document.getElementById('submit').addEventListener('click', function() {
+  stopTimer();
+  var elapsed = Math.floor((Date.now() - startTime) / 1000);
+  var penalty = 0;
+  var total = currentItems.length;
+  var strictCorrect = 0;
+  var lenientCorrect = 0;
+
+  // Collect results first
+  var results = [];
+  document.querySelectorAll('#questions input').forEach(function(input) {
+    var userAns = input.value.trim();
+    var correctAns = input.dataset.answer;
+    var strict = normaliseStrict(userAns) === normaliseStrict(correctAns);
+    var lenient = normaliseLenient(userAns) === normaliseLenient(correctAns);
+    results.push({
+      userAns: userAns,
+      correctAns: correctAns,
+      strict: strict,
+      lenient: lenient,
+      prompt: input.closest('div').querySelector('strong').textContent
+    });
+    if (lenient) lenientCorrect++;
+    if (strict) strictCorrect++;
+  });
+
+  // Colour borders
+  document.querySelectorAll('#questions input').forEach(function(input, idx) {
+    if (results[idx].lenient) {
+      input.style.border = '2px solid #27ae60';
+      input.style.background = '#f0fff4';
+    } else {
+      penalty += PENALTY_SECS;
+      input.style.border = '2px solid #e74c3c';
+      input.style.background = '#fff5f5';
+    }
+  });
+
+  var totalTime = elapsed + penalty;
+  var stars = 0;
+  if (strictCorrect === total && totalTime <= levelTimeLimit(currentLevel)) stars = 3;
+  else if (lenientCorrect === total) stars = 2;
+  else if (lenientCorrect >= Math.ceil(total * 0.5)) stars = 1;
+
+  setBest(currentCat, currentLevel, stars);
+  if (stars >= 1) setUnlocked(currentLevel + 1);
+
+  // Render results
+  resultsContainer.innerHTML = '';
+
+  if (lenientCorrect === total) {
+    var cel = document.createElement('div');
+    cel.className = 'perfect-celebration';
+    cel.textContent = stars === 3 ? '🎉 PERFECT — 3 stars!' : '✅ All correct!';
+    resultsContainer.appendChild(cel);
+  }
+
+  var sum = document.createElement('div');
+  sum.innerHTML = '<h3>Done!</h3><p>Correct: ' + lenientCorrect + '/' + total + '</p>' +
+    '<p>Time: ' + elapsed + 's + Penalty: ' + penalty + 's = <strong>' + totalTime + 's</strong></p>' +
+    '<p style="font-size:1.4rem">' + '⭐'.repeat(stars) + '☆'.repeat(3 - stars) + '</p>';
+  resultsContainer.appendChild(sum);
+
+  // Show missed answers
+  var missed = results.filter(function(r) { return !r.lenient; });
+  if (missed.length) {
+    var mt = document.createElement('h4');
+    mt.textContent = 'What you missed:';
+    mt.style.marginTop = '10px';
+    resultsContainer.appendChild(mt);
+    missed.forEach(function(r) {
+      var p = document.createElement('p');
+      p.style.cssText = 'margin:6px 0;font-size:0.9rem;';
+      p.innerHTML = '<strong>' + escHtml(r.prompt) + '</strong><br>' +
+        '✅ <span style="color:#27ae60">' + escHtml(r.correctAns) + '</span><br>' +
+        '❌ <span style="color:#e74c3c">' + escHtml(r.userAns || '(blank)') + '</span>';
+      resultsContainer.appendChild(p);
+    });
+  }
+
+  if (stars >= 1) {
+    var um = document.createElement('p');
+    um.className = 'unlock-msg';
+    um.textContent = '🔓 Level ' + (currentLevel + 1) + ' unlocked!';
+    resultsContainer.appendChild(um);
+  }
+
+  updateProgress();
+
+  if (AuntieUnlocked()) {
+    var bm = document.createElement('p');
+    bm.className = 'unlock-msg';
+    bm.innerHTML = '📋 The Auntie is ready! <a href="he-Auntie.html" style="color:#1a7a4a;font-weight:bold;" onclick="saveTurboData()">Meet The Auntie →</a>';
+    resultsContainer.appendChild(bm);
+  }
+
+  var tb = document.createElement('button');
+  tb.textContent = 'Try Again';
+  tb.className = 'try-again';
+  tb.type = 'button';
+  tb.onclick = function() { startGame(currentLevel); };
+  resultsContainer.appendChild(tb);
+
+  var bb = document.createElement('button');
+  bb.textContent = '← Back to Levels';
+  bb.id = 'back-button';
+  bb.type = 'button';
+  bb.onclick = function() { renderLevels(); };
+  resultsContainer.appendChild(bb);
+});
+
+function saveTurboData() {
+  localStorage.setItem('he_turbo_data', JSON.stringify(getTurboData()));
+}
+
+function levelTimeLimit(l) { return 140 - (l - 1) * 10; }
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+  var stars = getTotalStars();
+  var pct = Math.min(100, Math.round((stars / AUNTIE_UNLOCK) * 100));
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  var banner = document.getElementById('star-banner');
+  if (AuntieUnlocked()) {
+    banner.textContent = '🎉 ' + stars + ' stars — The Auntie is unlocked!';
+    banner.style.background = '#eafaf1';
+    banner.style.borderColor = '#1a7a4a';
+    banner.style.color = '#1a7a4a';
+  } else {
+    banner.textContent = '⭐ ' + stars + ' star' + (stars !== 1 ? 's' : '') + ' earned — need ' + AUNTIE_UNLOCK + ' to unlock The Auntie';
+  }
+}
+
+// ============================================================
+// NORMALISERS — generous for Home Ec answers
+// ============================================================
+function normaliseLenient(s) {
+  return String(s).toLowerCase()
+    .replace(/['']/g, '')
+    .replace(/[,;:.]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normaliseStrict(s) {
+  return String(s).toLowerCase()
+    .replace(/['']/g, '')
+    .replace(/[,;:.]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function shuffleArray(a) { return a.sort(function() { return Math.random() - 0.5; }); }
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(function() {
+  renderLevels();
+})();
+</script>
+</body>
+</html>
