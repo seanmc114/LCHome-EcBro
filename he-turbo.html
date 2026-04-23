@@ -33,7 +33,7 @@
     .level-btn:disabled { background: #c8c4bc; cursor: not-allowed; transform: none; color: #888; }
     .level-btn.adv { background: #7c3d9e; }
     .level-badge { font-size: 0.7rem; background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 10px; }
-    .examiner-btn { background: linear-gradient(135deg, var(--primary), #922b21) !important; justify-content: center !important; font-size: 1rem !important; }
+    .Auntie-btn { background: linear-gradient(135deg, var(--primary), #922b21) !important; justify-content: center !important; font-size: 1rem !important; }
     #game { display: none; margin-top: 16px; }
     #timer { font-size: 1.3rem; color: var(--primary); font-weight: 900; margin-bottom: 14px; }
     #questions div { margin: 14px 0; font-size: 0.97rem; text-align: left; }
@@ -56,10 +56,10 @@
   <p class="game-sub">Home Economics · Higher Level · Leaving Cert</p>
 
   <div class="progress-wrap">
-    <div class="progress-label"><span>Stars to unlock The Examiner</span><span id="progress-pct">0%</span></div>
+    <div class="progress-label"><span>Stars to unlock The Auntie</span><span id="progress-pct">0%</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
-  <div class="star-banner" id="star-banner">⭐ 0 stars — do 5 to unlock The Examiner</div>
+  <div class="star-banner" id="star-banner">⭐ 0 stars — do 5 to unlock The Auntie</div>
 
   <div id="cat-buttons">
     <button class="cat-btn active" type="button" onclick="selectCat('nutrition',this)">🥦 Nutrition</button>
@@ -799,7 +799,7 @@ social: [
 // ============================================================
 // GAME STATE
 // ============================================================
-const EXAMINER_UNLOCK = 5;
+const AUNTIE_UNLOCK = 5;
 const PENALTY_SECS = 20;
 const QUESTIONS_PER_ROUND = 5;
 
@@ -830,7 +830,7 @@ function getTotalStars() {
   return t;
 }
 
-function examinerUnlocked() { return getTotalStars() >= EXAMINER_UNLOCK; }
+function AuntieUnlocked() { return getTotalStars() >= AUNTIE_UNLOCK; }
 
 function getTurboData() {
   var cats = ['nutrition','foodscience','consumer','resource','social'];
@@ -902,14 +902,14 @@ function renderLevels() {
     levelList.appendChild(btn);
   }
 
-  if (examinerUnlocked()) {
+  if (AuntieUnlocked()) {
     var eb = document.createElement('button');
     eb.type = 'button';
-    eb.textContent = '📋 Meet The Examiner →';
-    eb.className = 'level-btn examiner-btn';
+    eb.textContent = '📋 Meet The Auntie →';
+    eb.className = 'level-btn Auntie-btn';
     eb.addEventListener('click', function() {
       localStorage.setItem('he_turbo_data', JSON.stringify(getTurboData()));
-      window.location.href = 'he-examiner.html';
+      window.location.href = 'he-Auntie.html';
     });
     levelList.appendChild(eb);
   }
@@ -1063,10 +1063,10 @@ document.getElementById('submit').addEventListener('click', function() {
 
   updateProgress();
 
-  if (examinerUnlocked()) {
+  if (AuntieUnlocked()) {
     var bm = document.createElement('p');
     bm.className = 'unlock-msg';
-    bm.innerHTML = '📋 The Examiner is ready! <a href="he-examiner.html" style="color:#1a7a4a;font-weight:bold;" onclick="saveTurboData()">Meet The Examiner →</a>';
+    bm.innerHTML = '📋 The Auntie is ready! <a href="he-Auntie.html" style="color:#1a7a4a;font-weight:bold;" onclick="saveTurboData()">Meet The Auntie →</a>';
     resultsContainer.appendChild(bm);
   }
 
@@ -1096,17 +1096,17 @@ function levelTimeLimit(l) { return 140 - (l - 1) * 10; }
 // ============================================================
 function updateProgress() {
   var stars = getTotalStars();
-  var pct = Math.min(100, Math.round((stars / EXAMINER_UNLOCK) * 100));
+  var pct = Math.min(100, Math.round((stars / AUNTIE_UNLOCK) * 100));
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-pct').textContent = pct + '%';
   var banner = document.getElementById('star-banner');
-  if (examinerUnlocked()) {
-    banner.textContent = '🎉 ' + stars + ' stars — The Examiner is unlocked!';
+  if (AuntieUnlocked()) {
+    banner.textContent = '🎉 ' + stars + ' stars — The Auntie is unlocked!';
     banner.style.background = '#eafaf1';
     banner.style.borderColor = '#1a7a4a';
     banner.style.color = '#1a7a4a';
   } else {
-    banner.textContent = '⭐ ' + stars + ' star' + (stars !== 1 ? 's' : '') + ' earned — need ' + EXAMINER_UNLOCK + ' to unlock The Examiner';
+    banner.textContent = '⭐ ' + stars + ' star' + (stars !== 1 ? 's' : '') + ' earned — need ' + AUNTIE_UNLOCK + ' to unlock The Auntie';
   }
 }
 

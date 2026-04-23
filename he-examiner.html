@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>The Examiner — Home Ec HL</title>
+  <title>The Auntie — Home Ec HL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
@@ -177,7 +177,7 @@
     <h3>How the HL Home Ec exam is marked</h3>
     <div class="crit">
       <div class="crit-name">Long Questions <span>(each worth 80 marks)</span></div>
-      <div class="crit-desc">Each long question has multiple parts (a, b, c...). Each part carries a set number of marks. Within each part, marks go to <strong>named points</strong> (stating the fact) and <strong>developed points</strong> (explaining or expanding it). A named point gets partial marks. A named and developed point gets full marks.<br><br>The examiner rewards: accuracy, use of correct terminology, relevant detail, and clear application to the question asked.</div>
+      <div class="crit-desc">Each long question has multiple parts (a, b, c...). Each part carries a set number of marks. Within each part, marks go to <strong>named points</strong> (stating the fact) and <strong>developed points</strong> (explaining or expanding it). A named point gets partial marks. A named and developed point gets full marks.<br><br>The Auntie rewards: accuracy, use of correct terminology, relevant detail, and clear application to the question asked.</div>
     </div>
     <div class="crit">
       <div class="crit-name">Short Questions <span>(Section A, 100 marks)</span></div>
@@ -251,7 +251,7 @@
       <circle cx="152" cy="115" r="3" fill="#c0392b"/>
     </svg>
 
-    <h1 class="welcome-title">The Examiner</h1>
+    <h1 class="welcome-title">The Auntie</h1>
     <p class="welcome-sub">Home Economics · HL · Leaving Cert</p>
 
     <div class="welcome-card">
@@ -259,7 +259,7 @@
       <input class="field-input" id="inp-name" type="text" placeholder="What do they call you?" maxlength="30" autocomplete="off">
     </div>
 
-    <button class="enter-btn" type="button" onclick="enterExaminer()">Meet The Examiner →</button>
+    <button class="enter-btn" type="button" onclick="enterExaminer()">Meet The Auntie →</button>
     <p class="turbo-note" id="turbo-note">Loading your Turbo data...</p>
 
     <footer>© 2026 · Home Ec HL · Imagination and Perseverance</footer>
@@ -282,7 +282,7 @@
   <div class="coach-header">
     <span class="ch-av">👩‍🍳</span>
     <div class="ch-info">
-      <div class="ch-name">The Examiner — Home Ec HL</div>
+      <div class="ch-name">The Auntie — Home Ec HL</div>
       <div class="ch-sub" id="header-sub">Written Exam Practice</div>
     </div>
     <div class="ch-actions">
@@ -637,7 +637,7 @@ window.addEventListener('DOMContentLoaded', function() {
     note.style.fontStyle = 'normal';
   }
 
-  var n = localStorage.getItem('he_examiner_name');
+  var n = localStorage.getItem('he_Auntie_name');
   if (n) document.getElementById('inp-name').value = n;
 });
 
@@ -674,7 +674,7 @@ function enterExaminer() {
   }
 
   state.name = name;
-  localStorage.setItem('he_examiner_name', name);
+  localStorage.setItem('he_Auntie_name', name);
   showReveal();
 }
 
@@ -689,7 +689,7 @@ function showReveal() {
   var main, sub;
   if (attempts === 0) {
     main = 'Right, ' + name + '. Come here to me.';
-    sub = 'First time. Good — that\'s the right attitude.\n\nHere\'s how this works: I give you a real HL question. You write your answer. I mark it exactly like the examiner would — named points, development, correct terminology.\n\nOne rule before we start: name the term first, then explain it. Every time. "It is important for the body" gets you nothing. Name it. Then develop it. That\'s the difference between marks and no marks.';
+    sub = 'First time. Good — that\'s the right attitude.\n\nHere\'s how this works: I give you a real HL question. You write your answer. I mark it exactly like the real exam — named points, development, correct terminology.\n\nOne rule before we start: name the term first, then explain it. Every time. "It is important for the body" gets you nothing. Name it. Then develop it. That\'s the difference between marks and no marks.';
   } else {
     var best = Math.max.apply(null, state.attempts.map(function(a) { return a.total; }));
     main = 'Good to see you, ' + name + '.';
@@ -717,7 +717,7 @@ function openingGreeting() {
   var msg = '';
 
   if (state.firstVisit) {
-    msg = 'Right, ' + name + '. Here\'s the deal.\n\nI give you a real HL long question — same structure as the paper. You write your answer in the box. I mark it like the actual examiner would: named points plus development.\n\nThe single thing that loses most marks? Writing vague sentences without naming the term. "It\'s good for the body" — no. Name the nutrient. Name the process. Name the legislation. Then explain it.\n\nPick your topic above and let\'s get started.';
+    msg = 'Right, ' + name + '. Here\'s the deal.\n\nI give you a real HL long question — same structure as the paper. You write your answer in the box. I mark it against the actual scheme: named points plus development.\n\nThe single thing that loses most marks? Writing vague sentences without naming the term. "It\'s good for the body" — no. Name the nutrient. Name the process. Name the legislation. Then explain it.\n\nPick your topic above and let\'s get started.';
     localStorage.setItem('he_first_visit', 'no');
     state.firstVisit = false;
   } else if (state.attempts.length > 0) {
